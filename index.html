@@ -1,149 +1,68 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <title>Cheema AI (Beta)</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: black;
-      color: white;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-    }
-
-    .app {
-      width: 90%;
-      max-width: 500px;
-      border: 2px solid #00ff66;
-      display: flex;
-      flex-direction: column;
-    }
-
-    header {
-      text-align: center;
-      padding: 10px;
-      border-bottom: 2px solid #00ff66;
-    }
-
-    h1 {
-      color: #00ff66;
-      margin: 5px 0;
-    }
-
-    small {
-      color: #ff4444;
-    }
-
-    #chat {
-      flex: 1;
-      padding: 10px;
-      overflow-y: auto;
-    }
-
-    .msg {
-      margin: 6px 0;
-    }
-
-    .cheema {
-      color: #00ff66;
-    }
-
-    .user {
-      color: #ff4444;
-      text-align: right;
-    }
-
-    .input {
-      display: flex;
-      border-top: 2px solid #00ff66;
-    }
-
-    input {
-      flex: 1;
-      padding: 10px;
-      background: black;
-      color: white;
-      border: none;
-      outline: none;
-    }
-
-    button {
-      background: #00ff66;
-      color: black;
-      border: none;
-      padding: 10px 14px;
-      cursor: pointer;
-      font-weight: bold;
-    }
-
-    button:hover {
-      opacity: 0.9;
-    }
-  </style>
-</head>
-<body>
-
-<div class="app">
-  <header>
-    <h1>🦜 Cheema AI</h1>
-    <small>DIY Build Helper — Beta</small>
-  </header>
-
-  <div id="chat"></div>
-
-  <div class="input">
-    <input id="userInput" placeholder="Ask Cheema about your DIY project..." />
-    <button onclick="send()">Send</button>
-  </div>
-</div>
-
 <script>
+let step = 0;
+let userData = {};
+
+function sendMessage() {
+  const input = document.getElementById("userInput");
+  const message = input.value.trim();
+  if (!message) return;
+
+  addMessage(message, "user");
+  input.value = "";
+
+  const lower = message.toLowerCase();
+
+  // 🔹 BLUEPRINT CHECK (works anytime)
+  if (lower.includes("blueprint")) {
+    addMessage(`
+🪑 CHAIR BLUEPRINT (BEGINNER)
+
+Materials:
+- 4 wooden legs (18")
+- 1 seat panel (16x16")
+- Screws (2")
+- Wood glue
+
+Steps:
+1. Attach legs to seat panel
+2. Secure with screws + glue
+3. Sand edges
+4. Test stability
+
+Want an upgraded version?
+    `, "bot");
+    return;
+  }
+
+  // 🔹 CONVERSATION FLOW
+  if (step === 0) {
+    userData.project = message;
+    addMessage("Nice choice. What room or area is this for?", "bot");
+    step++;
+  } 
+  else if (step === 1) {
+    userData.room = message;
+    addMessage("Got it. What are the dimensions? (example: 10x12)", "bot");
+    step++;
+  } 
+  else if (step === 2) {
+    userData.size = message;
+    addMessage("Do you want a cheap, standard, or premium build?", "bot");
+    step++;
+  } 
+  else if (step === 3) {
+    userData.budget = message;
+    addMessage("Awesome. Say **blueprint** when you’re ready 👇", "bot");
+    step++;
+  }
+}
+
+function addMessage(text, sender) {
   const chat = document.getElementById("chat");
-  let stage = 0;
-
-  function add(text, who) {
-    const div = document.createElement("div");
-    div.className = "msg " + who;
-    div.innerText = text;
-    chat.appendChild(div);
-    chat.scrollTop = chat.scrollHeight;
-  }
-
-  add("Hey! I’m Cheema 🦜 What DIY project are you thinking about?", "cheema");
-
-  function send() {
-    const input = document.getElementById("userInput");
-    const text = input.value.trim();
-    if (!text) return;
-
-    add(text, "user");
-    input.value = "";
-
-    setTimeout(() => respond(text.toLowerCase()), 300);
-  }
-
-  function respond(t) {
-    if (stage === 0) {
-      add("Nice choice. What room or area is this for?", "cheema");
-      stage = 1;
-    } 
-    else if (stage === 1) {
-      add("Got it. What are the dimensions? (example: 10x12 feet)", "cheema");
-      stage = 2;
-    } 
-    else if (stage === 2) {
-      add("Do you want a cheap, standard, or premium build?", "cheema");
-      stage = 3;
-    } 
-    else {
-      add("Awesome. Safety tip 🦜: measure twice, anchor anything tall, and use protective gear.", "cheema");
-    }
-  }
+  const div = document.createElement("div");
+  div.className = sender;
+  div.innerText = text;
+  chat.appendChild(div);
+  chat.scrollTop = chat.scrollHeight;
+}
 </script>
-
-</body>
-</html>
