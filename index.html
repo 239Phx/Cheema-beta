@@ -1,6 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Cheema AI (Beta)</title>
+
+  <style>
+    body {
+      margin: 0;
+      background: black;
+      color: #00ff66;
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .app {
+      width: 90%;
+      max-width: 520px;
+      border: 2px solid #00ff66;
+      padding: 15px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    h2 {
+      text-align: center;
+      margin: 5px 0 10px;
+    }
+
+    .chat {
+      flex: 1;
+      overflow-y: auto;
+      margin-bottom: 10px;
+      border-top: 1px solid #00ff66;
+      border-bottom: 1px solid #00ff66;
+      padding: 10px 0;
+    }
+
+    .bot {
+      color: #00ff66;
+      margin: 6px 0;
+      white-space: pre-line;
+    }
+
+    .user {
+      color: #ff5555;
+      text-align: right;
+      margin: 6px 0;
+    }
+
+    .input-row {
+      display: flex;
+      gap: 6px;
+    }
+
+    input {
+      flex: 1;
+      padding: 8px;
+      background: black;
+      color: #00ff66;
+      border: 1px solid #00ff66;
+      outline: none;
+    }
+
+    button {
+      padding: 8px 14px;
+      background: #00ff66;
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="app">
+    <h2>🦜 Cheema AI<br><small>DIY Build Helper — Beta</small></h2>
+
+    <div class="chat" id="chat">
+      <div class="bot">
+Hey! I'm Cheema 🦜  
+Ask me for a DIY blueprint.
+Try typing: **chair blueprint**
+      </div>
+    </div>
+
+    <div class="input-row">
+      <input id="userInput" placeholder="Ask Cheema about your DIY project..." />
+      <button onclick="sendMessage()">Send</button>
+    </div>
+  </div>
+
 <script>
-let step = 0;
-let userData = {};
+function addMessage(text, type) {
+  const chat = document.getElementById("chat");
+  const div = document.createElement("div");
+  div.className = type;
+  div.textContent = text;
+  chat.appendChild(div);
+  chat.scrollTop = chat.scrollHeight;
+}
 
 function sendMessage() {
   const input = document.getElementById("userInput");
@@ -12,57 +114,43 @@ function sendMessage() {
 
   const lower = message.toLowerCase();
 
-  // 🔹 BLUEPRINT CHECK (works anytime)
-  if (lower.includes("blueprint")) {
-    addMessage(`
-🪑 CHAIR BLUEPRINT (BEGINNER)
+  if (lower.includes("chair") || lower.includes("blueprint")) {
+    addMessage(
+`🪑 CHAIR BLUEPRINT (BEGINNER)
 
 Materials:
 - 4 wooden legs (18")
 - 1 seat panel (16x16")
-- Screws (2")
-- Wood glue
+- 4 support rails (14")
+- Wood screws (2")
+
+Tools:
+- Drill
+- Measuring tape
+- Screwdriver
+- Sandpaper
 
 Steps:
 1. Attach legs to seat panel
-2. Secure with screws + glue
-3. Sand edges
-4. Test stability
+2. Secure support rails
+3. Tighten all screws
+4. Sand sharp edges
 
-Want an upgraded version?
-    `, "bot");
+Safety Tips:
+✔ Measure twice
+✔ Wear eye protection
+✔ Secure pieces before drilling`,
+      "bot"
+    );
     return;
   }
 
-  // 🔹 CONVERSATION FLOW
-  if (step === 0) {
-    userData.project = message;
-    addMessage("Nice choice. What room or area is this for?", "bot");
-    step++;
-  } 
-  else if (step === 1) {
-    userData.room = message;
-    addMessage("Got it. What are the dimensions? (example: 10x12)", "bot");
-    step++;
-  } 
-  else if (step === 2) {
-    userData.size = message;
-    addMessage("Do you want a cheap, standard, or premium build?", "bot");
-    step++;
-  } 
-  else if (step === 3) {
-    userData.budget = message;
-    addMessage("Awesome. Say **blueprint** when you’re ready 👇", "bot");
-    step++;
-  }
-}
-
-function addMessage(text, sender) {
-  const chat = document.getElementById("chat");
-  const div = document.createElement("div");
-  div.className = sender;
-  div.innerText = text;
-  chat.appendChild(div);
-  chat.scrollTop = chat.scrollHeight;
+  addMessage(
+"I can give DIY blueprints. Try asking for a chair, table, or shelf blueprint 👀",
+  "bot"
+);
 }
 </script>
+
+</body>
+</html>
