@@ -1,135 +1,179 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Cheema AI (Beta)</title>
-  <style>
-    body {
-      margin: 0;
-      background: black;
-      color: #00ff66;
-      font-family: Arial, sans-serif;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-    }
+<meta charset="UTF-8">
+<title>Cheema AI (Beta)</title>
 
-    .app {
-      width: 90%;
-      max-width: 500px;
-      border: 2px solid #00ff66;
-      padding: 10px;
-      display: flex;
-      flex-direction: column;
-    }
+<style>
+body {
+  margin: 0;
+  background: black;
+  color: #00ff66;
+  font-family: Arial, sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
 
-    .header {
-      text-align: center;
-      border-bottom: 2px solid #00ff66;
-      padding-bottom: 5px;
-    }
+.app {
+  width: 95%;
+  max-width: 520px;
+  border: 2px solid #00ff66;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+}
 
-    .chat {
-      flex: 1;
-      overflow-y: auto;
-      margin: 10px 0;
-      font-size: 14px;
-    }
+.chat {
+  flex: 1;
+  overflow-y: auto;
+  margin: 10px 0;
+  border-top: 1px solid #00ff66;
+  border-bottom: 1px solid #00ff66;
+  padding: 8px;
+}
 
-    .bot {
-      color: #00ff66;
-      margin-bottom: 8px;
-    }
+.bot { color: #00ff66; margin-bottom: 8px; white-space: pre-line; }
+.user { color: #ff4444; text-align: right; margin-bottom: 8px; }
 
-    .user {
-      color: #ff4444;
-      text-align: right;
-      margin-bottom: 8px;
-    }
+.input-row {
+  display: flex;
+  gap: 6px;
+}
 
-    .input-box {
-      display: flex;
-    }
+input {
+  flex: 1;
+  padding: 8px;
+  background: black;
+  color: white;
+  border: 1px solid #00ff66;
+}
 
-    input {
-      flex: 1;
-      background: black;
-      color: white;
-      border: 1px solid #00ff66;
-      padding: 5px;
-    }
+button {
+  padding: 8px 12px;
+  background: #00ff66;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+}
 
-    button {
-      background: #00ff66;
-      border: none;
-      padding: 5px 10px;
-      cursor: pointer;
-    }
-  </style>
+.preview {
+  margin-top: 10px;
+  border: 2px dashed #00aaff;
+  height: 140px;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  color: #00aaff;
+  font-size: 13px;
+  text-align: center;
+}
+</style>
 </head>
+
 <body>
-
 <div class="app">
-  <div class="header">
-    🦜 <strong>Cheema AI</strong><br>
-    <small>DIY Build Helper — Beta</small>
+  <h2 style="text-align:center">🦜 Cheema AI<br><small>DIY + Scan Preview (Beta)</small></h2>
+
+  <div class="chat" id="chat">
+    <div class="bot">
+Hey! I’m Cheema 🦜  
+I can:
+• Answer questions  
+• Design DIY blueprints  
+• Tell you where to buy parts  
+• Help you scan a space  
+
+Try: "Build a desk" or "Scan my room"
+    </div>
   </div>
 
-  <div id="chat" class="chat">
-    <div class="bot">Hey! I’m Cheema 🦜 What DIY project are you thinking about?</div>
-  </div>
-
-  <div class="input-box">
+  <div class="input-row">
     <input id="userInput" placeholder="Ask Cheema..." />
     <button onclick="sendMessage()">Send</button>
   </div>
+
+  <div id="preview" class="preview">
+🟦 Build Preview Area  
+(Minecraft-style placement preview)
+  </div>
+
+  <input type="file" id="cameraInput" accept="image/*" capture="environment" style="display:none">
 </div>
 
 <script>
 function addMessage(text, type) {
   const chat = document.getElementById("chat");
-  const msg = document.createElement("div");
-  msg.className = type;
-  msg.innerText = text;
-  chat.appendChild(msg);
+  const div = document.createElement("div");
+  div.className = type;
+  div.textContent = text;
+  chat.appendChild(div);
   chat.scrollTop = chat.scrollHeight;
 }
 
 function sendMessage() {
   const input = document.getElementById("userInput");
-  const message = input.value.trim();
-  if (!message) return;
+  const msg = input.value.trim();
+  if (!msg) return;
 
-  addMessage(message, "user");
+  addMessage(msg, "user");
   input.value = "";
 
-  const lower = message.toLowerCase();
+  const lower = msg.toLowerCase();
 
-  if (lower.includes("blueprint") || lower.includes("chair")) {
+  // Scan request
+  if (lower.includes("scan")) {
     addMessage(
-`🪑 CHAIR BLUEPRINT (BEGINNER)
-
-Materials:
-- 4 wooden legs (18")
-- 1 seat panel (16x16")
-- Screws (2")
-- Wood glue
-
-Steps:
-1. Attach legs to each corner of the seat
-2. Secure with screws + glue
-3. Let dry 24 hours
-4. Sand edges for safety
-
-Tip 🦜: Measure twice, screw once.`,
+"📸 Scan Mode\nUse your phone camera to scan the area.\nThis helps preview how the build fits.\nTap the camera when ready.",
       "bot"
     );
-  } else {
-    addMessage("Tell me what you want to build, or ask for a blueprint 🦜", "bot");
+    document.getElementById("cameraInput").click();
+    return;
   }
-}
-</script>
 
-</body>
-</html>
+  // Blueprint logic
+  if (lower.includes("build") || lower.includes("blueprint")) {
+    addMessage(
+`🧱 DIY BLUEPRINT (ROOM-SAFE)
+
+Tools:
+• Drill
+• Screwdriver
+• Measuring tape
+• Saw (hand saw)
+
+Materials:
+• Wood boards
+• Screws
+• Wood glue
+
+Versions:
+• Cheap: Pine wood
+• Standard: Birch
+• Premium: Oak
+
+Buy parts at:
+• Home Depot
+• Lowe's
+• Local hardware store
+
+Want to scan your room for fit?`,
+      "bot"
+    );
+    return;
+  }
+
+  // General help
+  addMessage(
+"I can help with DIY builds, planning, safety, or scanning a space. Just ask 🦜",
+    "bot"
+  );
+}
+
+// Fake scan preview
+document.getElementById("cameraInput").addEventListener("change", () => {
+  const preview = document.getElementById("preview");
+  preview.style.display = "flex";
+  addMessage(
+"🟦 Preview loaded!\nThis blue outline shows where your build could go.\n
